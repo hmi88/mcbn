@@ -21,8 +21,8 @@ parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--rgb_range', type=int, default=1)
 
 # Model
-parser.add_argument('--uncertainty', default='normal',
-                    choices=('normal', 'epistemic', 'aleatoric', 'combined'))
+parser.add_argument('--model', default='normal',
+                    choices=('mcdo', 'mcbn'))
 parser.add_argument('--in_channels', type=int, default=1)
 parser.add_argument('--n_feats', type=int, default=32)
 parser.add_argument('--var_weight', type=float, default=1.)
