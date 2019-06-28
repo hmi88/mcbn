@@ -12,7 +12,7 @@ class Loss(nn.Module):
         self.losses = []
         self.loss_module = nn.ModuleList()
 
-        if config.uncertainty == 'epistemic' or config.uncertainty == 'normal':
+        if config.model == 'epistemic' or config.model == 'mcbn':
             module = import_module('loss.mse')
             loss_function = getattr(module, 'MSE')()
         else:

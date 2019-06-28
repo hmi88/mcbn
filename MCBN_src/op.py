@@ -10,7 +10,7 @@ class Operator:
     def __init__(self, config, ckeck_point):
         self.config = config
         self.epochs = config.epochs
-        self.uncertainty = config.uncertainty
+        self.model_type = config.model
         self.ckpt = ckeck_point
         self.tensorboard = config.tensorboard
         if self.tensorboard:
@@ -25,7 +25,7 @@ class Operator:
         self.optimizer = make_optimizer(config, self.model)
 
         # load ckpt, model, optimizer
-        if self.ckpt.exp_load is not None or not config.is_train:
+        if (self.ckpt.exp_load is not None) or (not config.is_train):
             print("Loading model... ")
             self.load(self.ckpt)
             print(self.ckpt.last_epoch, self.ckpt.global_step)
@@ -33,6 +33,7 @@ class Operator:
     def train(self, data_loader):
         last_epoch = self.ckpt.last_epoch
         train_batch_num = len(data_loader['train'])
+        import random
 
         for epoch in range(last_epoch, self.epochs):
             for batch_idx, batch_data in enumerate(data_loader['train']):
@@ -109,7 +110,7 @@ class Operator:
                 self.summary_writer.add_images("test/mean_img",
                                                torch.clamp(batch_results['mean'], 0., 1.),
                                                self.ckpt.last_epoch)
-                if not self.uncertainty == 'normal':
+                if not self.model_type == 'normal':
                     self.summary_writer.add_images("test/var_img",
                                                    batch_results['var'],
                                                    self.ckpt.last_epoch)

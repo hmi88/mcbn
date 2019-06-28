@@ -13,6 +13,7 @@ parser.add_argument("--num_gpu", type=int, default=1)
 parser.add_argument("--num_work", type=int, default=8)
 parser.add_argument("--exp_dir", type=str, default="../MCBN_exp")
 parser.add_argument("--exp_load", type=str, default=None)
+parser.add_argument("--exp_epoch", type=int, default=-1)
 
 # Data
 parser.add_argument("--data_dir", type=str, default="/mnt/sda")
@@ -21,7 +22,7 @@ parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--rgb_range', type=int, default=1)
 
 # Model
-parser.add_argument('--model', default='normal',
+parser.add_argument('--model', default='mcbn',
                     choices=('mcdo', 'mcbn'))
 parser.add_argument('--in_channels', type=int, default=1)
 parser.add_argument('--n_feats', type=int, default=32)
