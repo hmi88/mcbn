@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import torch
 
 from config import get_config
@@ -14,6 +16,9 @@ def main(config):
     data_loader = get_dataloader(config)
     check_point = Checkpoint(config)
     operator = Operator(config, check_point)
+
+    if config.model == 'mcbn':
+        config.assist_dataset = deepcopy(data_loader)
 
     if config.is_train:
         operator.train(data_loader)

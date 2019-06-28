@@ -10,7 +10,7 @@ class Model(nn.Module):
     def __init__(self, config):
         super(Model, self).__init__()
         print('Making model...')
-
+        self.config = config
         self.num_gpu = config.num_gpu
         self.model_type = config.model
         self.n_samples = config.n_samples
@@ -28,7 +28,7 @@ class Model(nn.Module):
             forward_func = self.model.forward
             if self.model_type == 'normal':
                 return forward_func(input)
-            elif self.model_type == 'mbcn':
+            elif self.model_type == 'mcbn':
                 return self.test_mcbn(input, forward_func)
 
     def test_aleatoric(self, input, forward_func):
@@ -60,9 +60,17 @@ class Model(nn.Module):
     def test_mcbn(self, input, forward_func):
         mean1s = []
         mean2s = []
+        assist_dataset = self.config.assist_dataset['train']
 
-        for i_sample in range(self.n_samples):
-            results = forward_func(input)
+        for i_sample, assist_data in enumerate(assist_dataset):
+            if i_sample == self.n_samples:
+                break
+
+            assist_input, _ = assist_data
+            assist_input = assist_input.to(self.config.device)
+
+            new_input = torch.cat([input, assist_input], dim=0)
+            results = forward_func(new_input)
             mean1 = results['mean']
             mean1s.append(mean1 ** 2)
             mean2s.append(mean1)

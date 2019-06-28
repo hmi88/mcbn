@@ -1,4 +1,6 @@
 import numpy as np
+
+import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from model import *
@@ -33,7 +35,6 @@ class Operator:
     def train(self, data_loader):
         last_epoch = self.ckpt.last_epoch
         train_batch_num = len(data_loader['train'])
-        import random
 
         for epoch in range(last_epoch, self.epochs):
             for batch_idx, batch_data in enumerate(data_loader['train']):
@@ -66,17 +67,17 @@ class Operator:
                                                    torch.clamp(batch_results['mean'], 0., 1.),
                                                    current_global_step)
 
-            # use tensorboard
-            if self.tensorboard:
-                print(self.optimizer.get_lr(), epoch)
-                self.summary_writer.add_scalar('epoch_lr',
-                                               self.optimizer.get_lr(), epoch)
+                # use tensorboard
+                if self.tensorboard:
+                    print(self.optimizer.get_lr(), epoch)
+                    self.summary_writer.add_scalar('epoch_lr',
+                                                   self.optimizer.get_lr(), epoch)
 
-            # test model & save model
-            self.optimizer.schedule()
-            self.save(self.ckpt, epoch)
-            self.test(data_loader)
-            self.model.train()
+                # test model & save model
+                self.optimizer.schedule()
+                self.save(self.ckpt, epoch)
+                self.test(data_loader)
+                self.model.train()
 
         self.summary_writer.close()
 

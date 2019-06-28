@@ -65,10 +65,12 @@ class CustomBN(nn.Module):
         if self.training:
             y = self.bn2d(x)
         else:
+            x_size = x.size()
+            half_batch = x_size[0]//2
             self.train()
             self.bn2d.running_mean = torch.zeros(self.n_in_feat)
             self.bn2d.running_var = torch.ones(self.n_in_feat)
-            _ = self.bn2d(x)
+            _ = self.bn2d(x[half_batch:])
             self.eval()
             y = self.bn2d(x)
         return y
@@ -79,7 +81,7 @@ class _Encoder(nn.Module):
         super(_Encoder, self).__init__()
 
         layers = [nn.Conv2d(n_in_feat, n_out_feat, 3, 1, 1),
-                  nn.BatchNorm2d(n_out_feat),
+                  CustomBN(n_out_feat),
                   nn.ReLU()]
 
         if n_blocks > 1:
@@ -104,7 +106,7 @@ class _Decoder(nn.Module):
 
         if n_blocks > 1:
             layers += [nn.Conv2d(n_in_feat, n_out_feat, 3, 1, 1),
-                       nn.BatchNorm2d(n_out_feat),
+                       CustomBN(n_out_feat),
                        nn.ReLU()]
 
         self.features = nn.Sequential(*layers)
